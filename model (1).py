@@ -1,7 +1,7 @@
 from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.discrete_space import OrthogonalMooreGrid
-from agents import SchellingAgent
+from agents import SchellingAgent              ##importing from my own agent's file instead of Mesa's              
 from mesa.experimental.scenarios import Scenario
 
 
@@ -25,7 +25,7 @@ class SchellingScenario(Scenario):
     homophily: float = 0.4
     radius: int = 1
 
-#add new params!
+                                    ##added new parameters: intervention_prob, intervention_effect, homophily_floor, rng 
     intervention_prob: float = 0.2
     intervention_effect: float = 0.04
     homophily_floor: float = 0.1
@@ -35,8 +35,7 @@ class SchellingScenario(Scenario):
 class Schelling(Model):
     """Model class for the Schelling segregation model."""
 
-    def __init__(self, scenario: SchellingScenario = SchellingScenario()):
-        """Create a new Schelling model.
+    def __init__(self, scenario: SchellingScenario = SchellingScenario()):   ##added () after = SchellingScenario so model receives concrete object instead of class
 
         Args:
             scenario: SchellingScenario containing model parameters.
@@ -46,8 +45,8 @@ class Schelling(Model):
         # Model parameters
         self.density = scenario.density
         self.minority_pc = scenario.minority_pc
-        # New model params!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        self.intervention_prob = scenario.intervention_prob
+        
+        self.intervention_prob = scenario.intervention_prob     ## New model parameters 
         self.intervention_effect = scenario.intervention_effect
         self.homophily_floor = scenario.homophily_floor 
         #이거...wouold my understandig b accurate in that 
