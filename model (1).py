@@ -7,7 +7,7 @@ from mesa.experimental.scenarios import Scenario
 
 class SchellingScenario(Scenario):
     """Scenario for the Schelling model.
-
+    
     Args:
         width: Width of the grid
         height: Height of the grid
@@ -36,7 +36,7 @@ class Schelling(Model):
     """Model class for the Schelling segregation model."""
 
     def __init__(self, scenario: SchellingScenario = SchellingScenario()):   ##added () after = SchellingScenario so model receives concrete object instead of class
-
+        """
         Args:
             scenario: SchellingScenario containing model parameters.
         """
