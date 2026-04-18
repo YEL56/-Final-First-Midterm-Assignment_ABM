@@ -1,0 +1,8 @@
+cd "C:\Users\06011\Desktop\ABM Python\Schelling\Midterm 5"
+solara run app.py
+
+
+Kill:  netstat -aon | findstr :8765
+
+WRITE: 
+solara run app.py --port 8703
