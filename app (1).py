@@ -2,7 +2,7 @@ import os
 
 import solara
 
-from model import Schelling, SchellingScenario
+from model import Schelling, SchellingScenario          ##import from my own model instead of Mesa's 
 from mesa.visualization import (
     Slider,
     SolaraViz,
@@ -18,25 +18,26 @@ def get_happy_agents(model):
 
 
 #path = os.path.dirname(os.path.abspath(__file__))
-path = os.getcwd()   #WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY?????
+path = os.getcwd()           ## debugging: use current directory
 
 
 def agent_portrayal(agent):
+    #if agent is happy
     style = AgentPortrayalStyle(
         x=agent.cell.coordinate[0],
         y=agent.cell.coordinate[1],
-        marker="o",
+        marker="o",                        ## changed to marker value matplotlib accepts 
         size=75,
     )
     #COLOR CHANGE 
     if agent.type == 0:
-        style.update(("color","blue"))  #why double parantheses? 밑에를 봐
+        style.update(("color","blue"))     ## color (agent type) separately added
     else:
-        style.update(("color","orange"))
+        style.update(("color","orange"))   ## color (agent type) separately added 
     #HAPPY STATUS CHANGE
     if not agent.happy:   
-        style.update(                       #밑에 is here. u coulda had a lotta pairs 
-            ("marker", "x"),
+        style.update(                        
+            ("marker", "x"),                ## changed to marker value matplotlib accepts 
             ("size", 50),
             ("zorder", 2), 
         )
@@ -45,14 +46,14 @@ def agent_portrayal(agent):
 
 
 model_params = {
-    "rng": Slider("Random Seed", 42, 1, 100, 1),
+    "rng": Slider("Random Seed", 42, 1, 100, 1),      ## added rng as parameter in slider form so it's treated as an integer, not text
     "density": Slider("Agent density", 0.8, 0.1, 1.0, 0.1),
     "minority_pc": Slider("Fraction minority", 0.2, 0.0, 1.0, 0.05),
     "homophily": Slider("Homophily", 0.4, 0.0, 1.0, 0.125),
     "width": 20,
     "height": 20,
-    "intervention_prob": Slider("Intervention Probability", 0.2, 0.0, 1.0, 0.05),  #!!!!!!!!!!!!!
-    "intervention_effect": Slider("Intervention Effect", 0.04, 0.0, 0.2, 0.01) #!!!!!!!!!
+    "intervention_prob": Slider("Intervention Probability", 0.2, 0.0, 1.0, 0.05),  #added intervention probability slider
+    "intervention_effect": Slider("Intervention Effect", 0.04, 0.0, 0.2, 0.01) #added intervention effect slider
     }
 
 
@@ -66,7 +67,7 @@ renderer.render()
 
 HappyPlot = make_plot_component({"happy": "tab:green"})
 
-def legend(model):                  #legend - making
+def legend(model):                  ## added description of what blue/orange/o/x represent
     return solara.Markdown(
         """
 **Description**  
@@ -84,18 +85,10 @@ page = SolaraViz(
     renderer,
     components=[
         HappyPlot,
-        legend,
+        legend,                       ## ensured legend is reflected in visualization
         get_happy_agents,
     ],
     model_params=model_params,
 )
 page  # noqa
 
-
-# 오류는 APP_3.py 파일이 Schelling과 SchellingScenario 클래스를 잘못된 위치에서 가져오려고 시도하고 있기 때문에 발생합니다. 이 클래스들은 MESA 라이브러리의 기본 모듈이 아니라, 직접 작성한 model.py 파일에 정의되어 있습니다. 따라서 APP_3.py의 import 문을 수정해야 합니다.
-
-# What I did: Colab에서 정의한 커스텀 SchellingAgent, SchellingScenario, Schelling 클래스들을 model.py 파일로 저장하는 코드를 생성하겠습니다. 이 파일을 APP_3.py와 같은 디렉토리에 저장해야 합니다.
-
-#그 다음, APP_3.py 파일 내의 다음 import 문을: from mesa.examples.basic.schelling.model import Schelling, SchellingScenario
-
-#이렇게 변경해야 함: from model import Schelling, SchellingScenario
