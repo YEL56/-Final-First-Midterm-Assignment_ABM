@@ -49,12 +49,8 @@ class Schelling(Model):
         self.intervention_prob = scenario.intervention_prob     ## New model parameters 
         self.intervention_effect = scenario.intervention_effect
         self.homophily_floor = scenario.homophily_floor 
-        #이거...wouold my understandig b accurate in that 
-        # MODEL SECTION: self.homphily_floor = scenario.homopihly floor (stores value?? 얜 뭐지: activate/ this the piece of paper below --- hace que sea viable  ---  "ok i'm ADOPTING the rule on the piece of paper" --- so this is what the world actually uses. AKA [PASSED LEGISLATION - IS IN EFFECT]
-        # MODEL SECTION: homophily_floor: float = 0.1 (ただのplaceholder value, like a piece of paper sitting on a desk that says "floor should be 0.1".)     AKA [UNPASSED LEGISLATION]
-        # AGENT SECTION:  actually applies hoomophily floor value - SPEAKING OF WHICH DONT I HAVE TO ADD SELF.HOMOPHILY_FLOOR TO AGENTS?!!!!!! no, again, homoph_floor is a global rule anyways. AKA [IMPLEMENTATION OF LEGISLATION]
+        
 
-        #scenario "this is what the homophily" model tells agent "this is ur homoph" agent implement == this is equiavelnt to just agents saying "this is what the law says" -- u have to store inside agent if u want agent to have different homophs 
         # Initialize grid
         self.grid = OrthogonalMooreGrid(
             (scenario.width, scenario.height), random=self.random, capacity=1
@@ -90,27 +86,27 @@ class Schelling(Model):
                     self,
                     cell,
                     agent_type,
-                    homophily=scenario.homophily,  #why not add scenario.homophily_floor??????A. you could, but do not need to. homophily_floor is a global rule. 그럼 대체 왜 self, cell,agent type, homophily, radius 도 다 global rule 아님? no ----- bc they can be different per/vary with the agent!! then what about radius? in this world, im not changing the radius at all. yup. but maybe...in the future I might want to -me voy a tirar del pelo HAHA 
+                    homophily=scenario.homophily, 
                     radius=scenario.radius,
                 )
 
         # Collect initial state
         self.agents.do("assign_state") 
-        for agent in self.agents: #at the initial state, no one should have had an interveniton
-            agent.received_intervention_this_round = False #for round NUMBER ONE 
+        for agent in self.agents: ## At the initial state, no one should have had an interveniton 
+            agent.received_intervention_this_round = False ## At the initial state, no one should have had an interveniton 
         self.datacollector.collect(self)
 
     def step(self):
         """Run one step of the model."""
-        self.happy = 0  # Reset counter of happy agents (world임!) 
-        self.agents.shuffle_do("step")  # Activate all agents (make agents move) in random order
-        self.agents.do("assign_state") #Recalculate happiness
-        for agent in self.agents:    # for EVERY ROUND u guys act like u never had intervention
-            agent.received_intervention_this_round = False
-        self.agents.shuffle_do("cooperate") #apply cooperation intervention here? or before assign_state? AFTER! - to make agents move > check happiness > inject cooperation>reduction in homophily for those that apply > next round 
-        self.happy = 0   #makehapiness counter 0 (or else we add agents that became happy as a result of moving (say, 40) + to agetns that became happy bc intervention (48). We only want 48. Now it becomes 40+48 = 88.)
-        self.agents.do("assign_state")
-        self.datacollector.collect(self)  # Collect data
-        self.running = self.happy < len(self.agents)  # Continue until everyone is happy
+        self.happy = 0  # Reset counter of happy agents 
+        self.agents.shuffle_do("step")                     # Activate all agents (make agents move) in random order
+        self.agents.do("assign_state")                     # Check happiness
+        for agent in self.agents:                          ## for the beginning of EVERY ROUND agents act as though they never had an intervention
+            agent.received_intervention_this_round = False ## for the beginning of EVERY ROUND agents act as though they never had an intervention
+        self.agents.shuffle_do("cooperate")                ## agents randomly cooperate (i.e., are randomly injected with a cooperative task)
+        self.happy = 0                                     ## make happiness counter start from 0 (or else we add agents that became happy as a result of moving (say, 40) to the number of agents that became happy thanks to intervention (say, 48). (without this line of code, when we only want 48, we get 40+48 = 88.)
+        self.agents.do("assign_state")                     ## Re-check happiness after cooperation
+        self.datacollector.collect(self)                   # Collect data
+        self.running = self.happy < len(self.agents)       # Continue until everyone is happy
 
         
