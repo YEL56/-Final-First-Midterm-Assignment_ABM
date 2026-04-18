@@ -1,7 +1,7 @@
-from mesa.discrete_space import CellAgent
+from mesa.discrete_space import CellAgent 
 
 class SchellingAgent(CellAgent):
-#birth: 
+#birth of agents: 
     def __init__(
         self, model, cell, agent_type: int, homophily: float = 0.4, radius: int = 1
     ): 
@@ -12,7 +12,7 @@ class SchellingAgent(CellAgent):
         self.homophily = homophily
         self.radius = radius
         self.happy = False
-        self.received_intervention_this_round = False ###################
+        self.received_intervention_this_round = False ##agent has not received intervention at initialization
         
 #define my state by defining what a neighbor is 
     def assign_state(self): 
@@ -22,8 +22,8 @@ class SchellingAgent(CellAgent):
         similar_neighbors_count = len([n for n in neighbors if n.type == self.type])
 
 # Calculate the fraction of similar neighbors
-        if (valid_neighbors_count := len(neighbors)) > 0:
-            similarity_fraction = similar_neighbors_count / valid_neighbors_count
+        if (valid_neighbors_count := len(neighbors)) > 0:    ##Changed label from valid_neighbors to valid_neigbhors_count as it is a counter
+            similarity_fraction = similar_neighbors_count / valid_neighbors_count ##Changed label from similar_neighbors to similar_neigbhors_count as it is a counter
         else:
 # If there are no neighbors, the similarity fraction is 0
             similarity_fraction = 0.0
@@ -33,27 +33,20 @@ class SchellingAgent(CellAgent):
         else:
             self.happy = True
             self.model.happy += 1
-#Let's inject cooperation intervention  - copy from def assign_state(self)       
-    def cooperate(self):    #i'm ab to try coop 
-        if self.received_intervention_this_round:
-            return  ###if agent had intervention this round, stop immediately, otherwise...
-              #start doing the work (look for neighbors...) 
-        neighbors = list(self.cell.get_neighborhood(radius=self.radius).agents)
-
-            #only choose unlike neighbors who havent already gotten an intervention  
-        unlike_neighbors = [n for n in neighbors if n.type != self.type and not n.received_intervention_this_round]
-
-#if there are no unlike neighbors, do nothing 
-        if len(unlike_neighbors) == 0:
-           return
-#generate a random # btw 0 and 1. If that's smaller than the intervention probability,intervention happens _ 참고 if self.random.random()<self.density  - each agent has a 20% chance of intervention_느낌: 👉 Density: “Each cell has 60% chance → many cells → ~60% filled" 👉 Intervention:“Each agent has 20% chance → many agents → ~20% intervened”
-        if self.random.random() < self.model.intervention_prob:
+#Let's inject cooperation intervention                  ## Introducing cooperative intervention task       
+    def cooperate(self):    #i'm ab to try coop         ## Defined what cooperation means for agent
+        if self.received_intervention_this_round:       ## If agent had intervention this round, stop immediately, otherwise...
+            return                                     
+        neighbors = list(self.cell.get_neighborhood(radius=self.radius).agents) ## Start doing the work of looking for neighbors
  
-#now than u received intervention, then, pick one unlike neighbor at random   
-            partner = self.random.choice(unlike_neighbors)
-#don't let homophily go below minimum - how? use max() tool - max(A,B) means "choose the bigger number" --> max(floor, lowered homoph as a result of intervention)   
-            self.homophily = max(self.model.homophily_floor, self.homophily -self.model.intervention_effect)
-#partner's homoph에도 apply
+        unlike_neighbors = [n for n in neighbors if n.type != self.type and not n.received_intervention_this_round] ## among all neighbors, only choose unlike neighbors who havent already gotten an intervention 
+
+        if len(unlike_neighbors) == 0:              ##if there are no unlike neighbors, do nothing 
+           return
+        if self.random.random() < self.model.intervention_prob: ## generate a random number btw 0 and 1. If that's smaller than the intervention probability,intervention happens 
+   
+            partner = self.random.choice(unlike_neighbors)      ## now than an agent received intervention, then, pick one unlike neighbor at random
+            self.homophily = max(self.model.homophily_floor, self.homophily -self.model.intervention_effect) #don't let homophily go below minimum 
             partner.homophily = max(self.model.homophily_floor, partner.homophily - self.model.intervention_effect)
             self.received_intervention_this_round = True
             partner.received_intervention_this_round = True
